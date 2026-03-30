@@ -16,6 +16,10 @@ const app = express();
 const jsonParser = express.json();
 
 app.use(cors());
+app.use((req, _res, next) => {
+  console.log(new Date().toISOString(), req.method, req.originalUrl);
+  next();
+});
 
 const PORT = Number(process.env.PORT || 8787);
 const API_TOKEN = process.env.API_TOKEN || "changeme";
@@ -196,6 +200,15 @@ app.get("/", (_req, res) => {
     },
   });
 });
+
+app.post(
+  "/alexa",
+  (req, _res, next) => {
+    console.log("Alexa request recebida em /alexa");
+    next();
+  },
+  ...alexaAdapter.getRequestHandlers()
+);
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true, mode: "webservice", defaultDeviceId: getDefaultDeviceId() || null });
